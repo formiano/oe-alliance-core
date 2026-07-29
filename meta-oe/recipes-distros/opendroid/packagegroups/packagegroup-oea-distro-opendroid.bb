@@ -24,7 +24,6 @@ RDEPENDS:${PN} = "\
     dosfstools \
     rtmpdump \
     unrar \
-    dnscrypt-proxy \
     python3-beautifulsoup4 \
     ${@bb.utils.contains("MACHINE_FEATURES", "smallflash", "", "${OPENDROID_EXTENDED}", d)} \
     "

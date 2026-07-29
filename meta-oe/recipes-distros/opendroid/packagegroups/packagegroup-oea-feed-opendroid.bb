@@ -33,6 +33,7 @@ RRECOMMENDS:${PN} = "\
     enigma2-plugin-skins-opd-steampunk \
     enigma2-plugin-skins-Ultimate-hd-Skin-4opd \
     openssl-old \
+    dnscrypt-proxy \
     enigma2-plugin-skincomponents-skincomponents-poster-pli-hd-fullnight \
     enigma2-plugin-extensions-ardmediathek \
     enigma2-plugin-extensions-imdb \

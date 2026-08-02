@@ -1,8 +1,8 @@
-PV = "4.24.2"
+PV = "4.24.5"
 HOMEPAGE = "https://www.samba.org/"
 SECTION = "console/network"
 
-LICENSE = "GPL-3.0-or-later & LGPL-3.0-or-later & GPL-2.0-or-later"
+LICENSE = "GPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-3.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504 \
                     file://${COREBASE}/meta/files/common-licenses/LGPL-3.0-or-later;md5=c51d3eef3be114124d11349ca0d7e117 \
                     file://${COREBASE}/meta/files/common-licenses/GPL-2.0-or-later;md5=fed54355545ffd980b814dab4a3b312c"
@@ -70,5 +70,5 @@ SRC_URI:append:openspa = " \
            file://smb-local.conf \
           "
 
-SRC_URI[sha256sum] = "ac24583f271a82ac324f7c6fad7327f65b591ad3492e1dccfee988e2c1c81dd1"
+SRC_URI[sha256sum] = "6d5d7ee82f5ce9da4135086c9b184e47a58b4b023565f58abbb1f8c8a922306b"
 UPSTREAM_CHECK_REGEX = "samba\-(?P<pver>4\.24(\.\d+)+).tar.gz"

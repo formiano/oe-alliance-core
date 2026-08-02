@@ -1,6 +1,5 @@
 DESCRIPTION = "blackbox7405 mac checker - flasher"
-LICENSE = "Gpl2"
-LICENSE = "CLOSED"
+LICENSE = "LicenseRef-Gpl2"
 require conf/license/license-close.inc
 
 PR = "r6"

@@ -8,7 +8,9 @@ SRC_URI:append = " \
 "
 
 PACKAGECONFIG:remove = "soup3"
-RDEPENDS:${PN}-soup += "libsoup-2.4"
+
+RDEPENDS:${PN}-soup:remove = "${MLPREFIX}libsoup"
+RDEPENDS:${PN}-soup += "${MLPREFIX}${@bb.utils.contains('PACKAGECONFIG', 'soup2', 'libsoup-2.4', 'libsoup', d)}"
 
 PACKAGECONFIG[soup2] = "-Dsoup=enabled,-Dsoup=disabled,libsoup-2.4"
 
@@ -21,6 +23,6 @@ PACKAGECONFIG:append = " \
 PACKAGECONFIG_CONFARGS:remove = "-Dsoup=disabled"
 EXTRA_OEMESON:append = " -Dsoup=enabled"
 
-PV = "1.28.4"
+PV = "1.28.5"
  
-SRC_URI[sha256sum] = "c825ea737c59cea0e4a0c41da2388045ff5dd32d162220ac93a7a82ee4a04e61"
+SRC_URI[sha256sum] = "58b45d24a1d77b39d7bb7d9ccc6e2d76bbf28618998c335c163f18e6f94a9324"

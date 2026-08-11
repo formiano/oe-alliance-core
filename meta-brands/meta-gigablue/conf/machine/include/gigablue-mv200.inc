@@ -23,7 +23,7 @@ MACHINE_FEATURES:append:teamblue = " textlcd"
 
 IMAGE_CLASSES  += "gigablue-emmc_image"
 IMAGE_FSTYPES += "gigablueemmc"
-IMAGE_ROOTFS_SIZE ?= "786432"
+IMAGE_ROOTFS_SIZE ?= "716800"
 
 TARGET_ARCH = "arm"
 DEFAULTTUNE = "cortexa15hf-neon-vfpv4"

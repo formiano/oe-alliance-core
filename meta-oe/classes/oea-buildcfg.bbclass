@@ -38,18 +38,53 @@ def _oea_yocto_codename(d):
 
 YOCTO_CODENAME = "${@_oea_yocto_codename(d)}"
 
-# BRAND_LAYER: derive from BBLAYERS by picking any entry under meta-brands/.
+# BRAND_LAYER: layer in BBLAYERS that provides conf/machine/${MACHINE}.conf.
 def _oea_brand_layer(d):
     import os
-    return ' '.join(
-        os.path.basename(l)
-        for l in (d.getVar('BBLAYERS') or '').split()
-        if '/meta-brands/' in l
-    )
+    machine = d.getVar('MACHINE') or ''
+    if not machine:
+        return ''
+    for l in (d.getVar('BBLAYERS') or '').split():
+        if os.path.isfile(os.path.join(l, 'conf', 'machine', machine + '.conf')):
+            return os.path.basename(l)
+    return ''
 
 BRAND_LAYER = "${@_oea_brand_layer(d)}"
 
-BUILDCFG_VARS = "DISTRO DISTRO_TYPE DISTRO_VERSION DISTRO_FEED_URI MACHINE MACHINEBUILD BRAND_LAYER TARGET_ARCH TARGET_SYS TUNE_FEATURES YOCTO_CODENAME BB_VERSION BUILD_SYS NATIVELSBSTRING SDKMACHINE"
+# CCACHE_STATUS: where ccache stores, how full it is and how well it hits.
+def _oea_ccache_status(d):
+    import os, subprocess
+    if 'ccache' not in (d.getVar('INHERIT') or '').split():
+        return 'disabled'
+    cdir = d.getVar('CCACHE_DIR') or '<unset>'
+    src = 'host' if 'ccache' in (d.getVar('HOSTTOOLS') or '').split() else 'ccache-native'
+    env = dict(os.environ)
+    env['CCACHE_DIR'] = cdir
+    for v in ('CCACHE_CONFIGPATH', 'CCACHE_MAXSIZE'):
+        val = d.getVar(v)
+        if val:
+            env[v] = val
+    try:
+        out = subprocess.check_output(['ccache', '--print-stats'], env=env,
+                                      stderr=subprocess.DEVNULL, text=True)
+    except Exception:
+        return '%s, %s' % (src, cdir)
+    st = {}
+    for line in out.splitlines():
+        k, _, v = line.partition('	')
+        st[k] = v
+    def size(k):
+        kib = int(st.get(k, 0))
+        return '%.1f GiB' % (kib / 1048576.0) if kib >= 1048576 else '%d MiB' % (kib / 1024.0)
+    hits = int(st.get('direct_cache_hit', 0)) + int(st.get('preprocessed_cache_hit', 0))
+    total = hits + int(st.get('cache_miss', 0))
+    rate = '%.0f%% hits lifetime' % (100.0 * hits / total) if total else 'empty'
+    return '%s, %s, %s of %s, %s' % (src, cdir, size('cache_size_kibibyte'),
+                                     size('max_cache_size_kibibyte'), rate)
+
+CCACHE_STATUS = "${@_oea_ccache_status(d)}"
+
+BUILDCFG_VARS = "DISTRO DISTRO_TYPE DISTRO_VERSION DISTRO_FEED_URI MACHINE MACHINEBUILD BRAND_LAYER TARGET_ARCH TARGET_SYS TUNE_FEATURES YOCTO_CODENAME BB_VERSION BUILD_SYS NATIVELSBSTRING SDKMACHINE CCACHE_STATUS"
 
 BUILDCFG_FUNCS:remove = "get_layers_branch_rev"
 BUILDCFG_FUNCS:append = " oea_repositories_info"
@@ -107,6 +142,16 @@ def oea_repositories_info(d):
             except Exception:
                 pass
             try:
+                b, _ = bb.process.run(['git', '-C', p, 'rev-parse',
+                                       '--abbrev-ref', 'HEAD@{upstream}'])
+                b = b.strip()
+                if b.startswith('origin/'):
+                    b = b[len('origin/'):]
+                if b:
+                    return b
+            except Exception:
+                pass
+            try:
                 r, _ = bb.process.run(['git', '-C', p, 'for-each-ref',
                                        '--points-at', 'HEAD',
                                        '--format=%(refname:short)',
@@ -128,7 +173,17 @@ def oea_repositories_info(d):
                     return b
             except Exception:
                 pass
-            return 'detached'
+            try:
+                b, _ = bb.process.run(['git', '-C', p, 'symbolic-ref',
+                                       '--short', 'refs/remotes/origin/HEAD'])
+                b = b.strip()
+                if b.startswith('origin/'):
+                    b = b[len('origin/'):]
+                if b:
+                    return b
+            except Exception:
+                pass
+            return ''
 
         def _dirty(p):
             env = os.environ.copy()
@@ -149,11 +204,14 @@ def oea_repositories_info(d):
             u = (url or '').strip().rstrip('/')
             if u.endswith('.git'):
                 u = u[:-4]
-            m = re.match(r'(?:git@[^:]+:|https?://[^/]+/|ssh://[^/]+/)(.+)$', u)
+            m = re.match(r'(?:git@([^:]+):|https?://([^/]+)/|ssh://([^/]+)/)(.+)$', u)
             if not m:
                 return ''
-            parts = m.group(1).split('/')
-            return parts[-2] if len(parts) >= 2 else ''
+            host = m.group(1) or m.group(2) or m.group(3) or ''
+            parts = m.group(4).split('/')
+            if len(parts) >= 2:
+                return parts[-2]
+            return host
 
         def _origin_url(p):
             try:
@@ -192,8 +250,8 @@ def oea_repositories_info(d):
         rows = []
         for name, full, url in entries:
             b, r = _branch(full, name), _rev(full)
-            rows.append((name, '%s:%s' % (b, r), _org(url),
-                         _date(full), _dirty(full)))
+            bs = ('%s:%s' % (b, r)) if b else r
+            rows.append((name, bs, _org(url), _date(full), _dirty(full)))
 
         # enigma2 (or per-distro fork) tip — read from BitBake's own
         # BB_URI_HEADREVS persistent cache, populated during recipe parse

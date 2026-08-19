@@ -27,7 +27,7 @@ EXTRA_OEMAKE = " \
 do_compile() {
     unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS CC LD CPP
 
-    SHORTSRC="/tmp/r52-${MACHINE}"
+    SHORTSRC="/tmp/r52-${MACHINE}-$$"
 
     rm -f "${SHORTSRC}"
     ln -s "${S}" "${SHORTSRC}"
@@ -47,6 +47,9 @@ do_compile() {
 
     rm -f "${SHORTSRC}"
 }
+
+require kcflags.inc
+
 do_install() {
     install -d \
         ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/net/wireless

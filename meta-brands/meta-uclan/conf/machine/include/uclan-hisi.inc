@@ -41,7 +41,7 @@ TARGET_ARCH = "arm"
 DEFAULTTUNE = "cortexa15hf-neon-vfpv4"
 
 PREFERRED_VERSION_linux-uclan = "${LINUX_VERSION}"
-PREFERRED_VERSION_wpa-supplicant = "${@bb.utils.contains('MACHINE', 'ustym4ks2ottx', '2.9' , '2.11', d)}"
+PREFERRED_VERSION_wpa-supplicant = "${@bb.utils.contains('MACHINE', 'ustym4ks2ottx', '2.9' , '2.12', d)}"
 PREFERRED_PROVIDER_virtual/kernel = "linux-uclan"
 PREFERRED_PROVIDER_virtual/egl = "uclan-opengl-${SOC_FAMILY}" 
 PREFERRED_PROVIDER_virtual/libgles1 = "uclan-opengl-${SOC_FAMILY}"
@@ -108,6 +108,4 @@ IMAGE_CMD:uclanemmc:append = "\
 # Add "MACHINEBUILD" override for recipes
 MACHINEOVERRIDES =. "${@['', '${MACHINEBUILD}:']['${MACHINEBUILD}' != '']}"
 
-BBMASK = "meta-vuplus/recipes-graphics/"
-BBMASK += "meta-vuplus/recipes-webkit/"
 

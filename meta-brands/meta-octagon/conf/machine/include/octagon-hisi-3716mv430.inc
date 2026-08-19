@@ -98,8 +98,6 @@ IMAGE_CMD:octagonubi:append = "\
     "
 
 # Add "MACHINEBUILD" override for recipes
-MACHINEOVERRIDES =. "${@['', '${MACHINEBUILD}:']['${MACHINEBUILD}' != '']}"
+MACHINEOVERRIDES =. "octagon:${@['', '${MACHINEBUILD}:']['${MACHINEBUILD}' != '']}"
 
-BBMASK = "meta-vuplus/recipes-graphics/"
-BBMASK += "meta-vuplus/recipes-webkit/"
 

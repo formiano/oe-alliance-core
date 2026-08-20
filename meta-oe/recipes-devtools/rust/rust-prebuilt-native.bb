@@ -26,9 +26,9 @@ PV = "${@rust_recipe_version(d)}"
 RUST_PREBUILT_SYS = "x86_64-unknown-linux-gnu"
 RUST_PREBUILT_BASE = "https://static.rust-lang.org/dist"
 
-SRC_URI[rustc.sha256sum] = "9819d0a32d56bd339585319c80260e332779f5541fd66838ab7e016d6c814819"
-SRC_URI[cargo.sha256sum] = "e1be5f5ff7f7f80ca506fb65770b759edbdc6d303781ed71c5de8ec8a8394779"
-SRC_URI[std.sha256sum] = "1c1e704ae80126b7de34f72ea2825f7fd01736dec20732faed47374b95282fba"
+SRC_URI[rustc.sha256sum] = "3545a0efad2355ecb0a3b9ac02efee96e27f1f9d24b7ce2fc3f279b2efb0d923"
+SRC_URI[cargo.sha256sum] = "ecc53a3c49fab5ab8c9301b3bbc8fb1dff9be6c65287add3f57a0fe8fddfea9e"
+SRC_URI[std.sha256sum] = "1bf4fde5048cca33e6ea00c7471281ed96d792f6923141e3db45072743a1afae"
 
 SRC_URI = "\
     ${RUST_PREBUILT_BASE}/rustc-${PV}-${RUST_PREBUILT_SYS}.tar.xz;name=rustc \

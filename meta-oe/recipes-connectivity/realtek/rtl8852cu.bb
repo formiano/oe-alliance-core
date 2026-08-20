@@ -11,7 +11,7 @@ SRC_URI = "git://github.com/formiano/rtl8852cu-20251113.git;protocol=https;branc
            file://0001-update-makefile.patch \
 "
 
-SRCREV = "23c77a55a6e4c75f899034507fff6979d2c5103b"
+SRCREV = "38bacde9de24a3b0aab24805671b43dabf4b59fb"
 
 S = "${UNPACKDIR}/s"
 

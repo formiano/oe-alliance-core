@@ -23,12 +23,20 @@ def rust_recipe_version(d):
 
 PV = "${@rust_recipe_version(d)}"
 
-RUST_PREBUILT_SYS = "x86_64-unknown-linux-gnu"
+RUST_PREBUILT_SYS = "${BUILD_ARCH}-unknown-linux-gnu"
 RUST_PREBUILT_BASE = "https://static.rust-lang.org/dist"
 
-SRC_URI[rustc.sha256sum] = "3545a0efad2355ecb0a3b9ac02efee96e27f1f9d24b7ce2fc3f279b2efb0d923"
-SRC_URI[cargo.sha256sum] = "ecc53a3c49fab5ab8c9301b3bbc8fb1dff9be6c65287add3f57a0fe8fddfea9e"
-SRC_URI[std.sha256sum] = "1bf4fde5048cca33e6ea00c7471281ed96d792f6923141e3db45072743a1afae"
+# sha256 of the upstream dist tarballs, per build host arch
+RUST_PREBUILT_SHA256[x86_64-rustc]  = "3545a0efad2355ecb0a3b9ac02efee96e27f1f9d24b7ce2fc3f279b2efb0d923"
+RUST_PREBUILT_SHA256[x86_64-cargo]  = "ecc53a3c49fab5ab8c9301b3bbc8fb1dff9be6c65287add3f57a0fe8fddfea9e"
+RUST_PREBUILT_SHA256[x86_64-std]    = "1bf4fde5048cca33e6ea00c7471281ed96d792f6923141e3db45072743a1afae"
+RUST_PREBUILT_SHA256[aarch64-rustc] = "4bc079af433c730af16aa90c96777985b86d40c4670670380160bd61626a577f"
+RUST_PREBUILT_SHA256[aarch64-cargo] = "02a4d7bf424ea28d574fe5b5d29e7ae99b0bc11a5920d8f28fa7408aa6a37992"
+RUST_PREBUILT_SHA256[aarch64-std]   = "24bd362ff484421cae8be8c4d326fde143a086782e59e21fc7f353a5d04cd630"
+
+SRC_URI[rustc.sha256sum] = "${@d.getVarFlag('RUST_PREBUILT_SHA256', d.getVar('BUILD_ARCH') + '-rustc') or ''}"
+SRC_URI[cargo.sha256sum] = "${@d.getVarFlag('RUST_PREBUILT_SHA256', d.getVar('BUILD_ARCH') + '-cargo') or ''}"
+SRC_URI[std.sha256sum] = "${@d.getVarFlag('RUST_PREBUILT_SHA256', d.getVar('BUILD_ARCH') + '-std') or ''}"
 
 SRC_URI = "\
     ${RUST_PREBUILT_BASE}/rustc-${PV}-${RUST_PREBUILT_SYS}.tar.xz;name=rustc \
@@ -54,6 +62,8 @@ do_install () {
 }
 
 SYSROOT_DIRS += "${RUST_PREBUILT_STAGE}"
+
+INHIBIT_SYSROOT_STRIP = "1"
 
 # Upstream binaries: stripped already, and not built by us.
 INSANE_SKIP:${PN} += "already-stripped arch staticdev ldflags textrel file-rdeps"

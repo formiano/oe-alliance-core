@@ -20,53 +20,57 @@ wait_for_seconds() {
     sleep "$1"
 }
 
-# Check if there are active softcams (excludes softcam.None)
-if find /etc/init.d/ -maxdepth 1 -type f -name "softcam.*" ! -name "softcam.None" | grep -q .; then
-    log_message "Active Softcam detected. Starting network check..."
+log_message "Starting network check..."
 
-    for iface in eth0 eth1 wlan0 wlan3; do
-        if grep -q "auto $iface" /etc/network/interfaces; then
-            if grep -qi "iface $iface inet dhcp" /etc/network/interfaces || \
-               grep -qi "iface $iface inet6 dhcp" /etc/network/interfaces; then
+for iface in eth0 eth1 wlan0 wlan3; do
+    if grep -Eq "^[[:space:]]*auto[[:space:]]+$iface([[:space:]]|$)" /etc/network/interfaces; then
+        if grep -Eqi "^[[:space:]]*iface[[:space:]]+$iface[[:space:]]+inet[[:space:]]+dhcp([[:space:]]|$)" /etc/network/interfaces || \
+           grep -Eqi "^[[:space:]]*iface[[:space:]]+$iface[[:space:]]+inet6[[:space:]]+dhcp([[:space:]]|$)" /etc/network/interfaces; then
 
-                log_message "Interface $iface configured for DHCP.."
+            log_message "Interface $iface configured for DHCP.."
 
-                ATTEMPTS=0
-                MAX_ATTEMPTS=20
+            ATTEMPTS=0
+            MAX_ATTEMPTS=20
 
-                while [ "$ATTEMPTS" -lt "$MAX_ATTEMPTS" ]; do
-                    IPV4=$(check_ipv4 "$iface")
-                    IPV6=$(check_ipv6 "$iface")
+            while [ "$ATTEMPTS" -lt "$MAX_ATTEMPTS" ]; do
+                IPV4=$(check_ipv4 "$iface")
+                IPV6=$(check_ipv6 "$iface")
 
-                    if [ -n "$IPV4" ] || [ -n "$IPV6" ]; then
-                        log_message "IP obtained for $iface - IPv4: ${IPV4:-none}, IPv6: ${IPV6:-none}"
+                if grep -qi "^[[:space:]]*iface[[:space:]]\+$iface[[:space:]]\+inet[[:space:]]\+dhcp" /etc/network/interfaces; then
+                    if [ -n "$IPV4" ]; then
+                        log_message "IPv4 DHCP address obtained for $iface - IPv4: $IPV4"
                         break
                     fi
+                elif grep -qi "^[[:space:]]*iface[[:space:]]\+$iface[[:space:]]\+inet6[[:space:]]\+dhcp" /etc/network/interfaces; then
+                    GLOBAL_IPV6=$(printf '%s\n' "$IPV6" | grep -v '^fe80:')
 
-                    log_message "$ATTEMPTS: No IP yet for $iface, retrying..."
-                    wait_for_seconds 1
-                    ATTEMPTS=$((ATTEMPTS + 1))
-                done
-
-                if [ "$ATTEMPTS" -eq "$MAX_ATTEMPTS" ]; then
-                    log_message "Max attempts reached. No IP for $iface. Exiting."
-                    exit 1
+                    if [ -n "$GLOBAL_IPV6" ]; then
+                        log_message "IPv6 DHCP address obtained for $iface - IPv6: $GLOBAL_IPV6"
+                        break
+                    fi
                 fi
 
-                break
+                log_message "$ATTEMPTS: No IP yet for $iface, retrying..."
+                wait_for_seconds 1
+                ATTEMPTS=$((ATTEMPTS + 1))
+            done
+
+            if [ "$ATTEMPTS" -eq "$MAX_ATTEMPTS" ]; then
+                log_message "Max attempts reached. No IP for $iface. Exiting."
+                exit 1
             fi
+
+            break
         fi
-    done
-
-    log_message "Contents of /etc/resolv.conf:"
-    cat /etc/resolv.conf >> "$log_file"
-
-    log_message "Check DNS (ping to google.com)..."
-    if ping -c 1 -W 2 google.com > /dev/null 2>&1; then
-        log_message "DNS working (google.com reachable)."
-    else
-        log_message "DNS not working (google.com unreachable)."
     fi
+done
+
+log_message "Contents of /etc/resolv.conf:"
+cat /etc/resolv.conf >> "$log_file"
+
+log_message "Check DNS (ping to google.com)..."
+if ping -c 1 -W 2 google.com > /dev/null 2>&1; then
+    log_message "DNS working (google.com reachable)."
 else
-    log_message "No active softcam. Skipping DHCP wait."
+    log_message "DNS not working (google.com unreachable)."
 fi

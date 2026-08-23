@@ -11,9 +11,7 @@
 case "$1" in
     start)
         echo "Starting wait-for-dhcp..."
-        /usr/bin/wait_for_dhcp.sh &
-        echo "Starting get_dns_suffix script..."
-        /usr/bin/get_dns_suffix.sh &
+        /usr/bin/wait_for_dhcp.sh
         ;;
     stop)
         echo "Stop action not implemented"

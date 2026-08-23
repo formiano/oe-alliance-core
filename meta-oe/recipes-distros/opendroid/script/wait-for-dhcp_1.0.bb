@@ -1,10 +1,9 @@
 SUMMARY = "Enigma2 DHCP wait helper"
-DESCRIPTION = "Fixes issues with slow DHCP servers when used with softcams"
+DESCRIPTION = "Waits for the configured DHCP interface to obtain a usable IP address during boot"
 SECTION = "base"
 require conf/license/license-gplv2.inc
 
 SRC_URI = "file://wait_for_dhcp.sh \
-           file://get_dns_suffix.sh \
            file://waitfordhcp"
 
 S = "${UNPACKDIR}"
@@ -12,7 +11,6 @@ S = "${UNPACKDIR}"
 do_install() {
     install -d ${D}/usr/bin
     install -m 0755 ${S}/wait_for_dhcp.sh ${D}/usr/bin/wait_for_dhcp.sh
-    install -m 0755 ${S}/get_dns_suffix.sh ${D}/usr/bin/get_dns_suffix.sh
 
     install -d ${D}/etc/init.d
     install -m 0755 ${S}/waitfordhcp ${D}/etc/init.d/waitfordhcp

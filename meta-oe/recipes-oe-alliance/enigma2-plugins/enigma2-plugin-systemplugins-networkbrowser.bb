@@ -6,13 +6,12 @@ DEPENDS = "enigma2"
 
 RDEPENDS:${PN} = "autofs smbclient nfs-utils-client"
 
-inherit gittag
-
 S = "${UNPACKDIR}/${BP}/src"
 
 SRCREV = "1567480c0765ccd6068e781b42fc4ac1f4f9094d"
-PV = "git"
-PKGV = "V${GITPKGVTAG}"
+
+PV = "1.0+git${SRCPV}"
+PR = "r1"
 
 inherit setuptools3-openplugins
 

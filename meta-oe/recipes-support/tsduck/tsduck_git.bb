@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://LICENSE.txt;beginline=1;endline=1;md5=c3af740e8628bb4
 
 SRC_URI = "git://github.com/tsduck/tsduck.git;protocol=https;branch=master"
 
-SRCREV = "958d0726dc7a54cef158fae35b4f3153f43c1599"
+SRCREV = "eacadfb66c514798dd54efed7b772f494bc110b3"
 PV = "git"
 PKGV = "${GITPKGVTAG}"
 PR = "r0"
@@ -17,7 +17,7 @@ DEPENDS = "gettext curl libedit"
 inherit gittag autotools-brokensep pkgconfig upx-compress
 
 TARGET_CC_ARCH += "${LDFLAGS}"
-EXTRA_OEMAKE = "CXXFLAGS_EXTRA=-Wno-maybe-uninitialized \
+EXTRA_OEMAKE = "CXXFLAGS_EXTRA='-Wno-maybe-uninitialized -Wno-error=array-bounds' \
 				MAIN_ARCH=${TUNE_PKGARCH} SYSROOT=${D} STRIP=/bin/true \
 				NOTEST=1 NOPCSC=1 NODTAPI=1 NOSRT=1 NODOC=1 NOVATEK=1 NOPCSTD=1 NORIST=1"
 

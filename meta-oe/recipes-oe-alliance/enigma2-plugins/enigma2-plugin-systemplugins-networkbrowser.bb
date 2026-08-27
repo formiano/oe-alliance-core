@@ -8,7 +8,7 @@ RDEPENDS:${PN} = "autofs smbclient nfs-utils-client nmap"
 
 S = "${UNPACKDIR}/${BP}/src"
 
-SRCREV = "88b57fb35ae50b2db815dc8e8e6ef4a798ea2e52"
+SRCREV = "ea99b0fc3604520a5faaa0d10a46deb9bc7e2268"
 
 PV = "1.0+git${SRCPV}"
 PR = "r1"

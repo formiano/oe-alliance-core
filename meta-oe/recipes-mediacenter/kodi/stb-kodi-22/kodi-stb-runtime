@@ -37,11 +37,17 @@ stb_kodi_prepare_widevine()
 
 stb_kodi_prepare_profile()
 {
-    # Keep Kodi's complete writable profile off the receiver's limited flash.
-    # This is a new profile location; legacy profiles below /home are not
-    # migrated or linked automatically.
-    HOME=/media/hdd
-    KODI_DATA=/media/hdd/.kodi
+    # Prefer a real filesystem mounted at /media/hdd. Some receivers expose
+    # /media/hdd as a plain directory below a very small tmpfs when no disk is
+    # mounted there, which is unsuitable for Kodi's writable profile.
+    if awk '$2 == "/media/hdd" { found=1 } END { exit !found }' /proc/mounts 2>/dev/null && \
+       [ -w /media/hdd ]; then
+        HOME=/media/hdd
+        KODI_DATA=/media/hdd/.kodi
+    else
+        HOME=/home/root
+        KODI_DATA=/home/root/.kodi
+    fi
     export HOME KODI_DATA
 }
 

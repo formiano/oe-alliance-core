@@ -6,6 +6,7 @@ LIC_FILES_CHKSUM = "file://${UNPACKDIR}/${GO_SRCURI_DESTSUFFIX}/LICENSE;md5=ea9f
 SRCREV = "${AUTOREV}"
 PV = "git"
 PKGV = "${GITPKGVTAG}"
+PR = "r1"
 
 SRC_URI = "\
     git://${GO_IMPORT}.git;protocol=https;branch=master;destsuffix=${GO_SRCURI_DESTSUFFIX}  \

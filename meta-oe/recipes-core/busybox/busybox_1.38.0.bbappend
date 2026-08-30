@@ -1,4 +1,4 @@
-PR .= ".6"
+PR .= ".7"
 SRC_URI += " \
             file://mount_single_uuid.patch \
             file://use_ipv6_when_ipv4_unroutable.patch \

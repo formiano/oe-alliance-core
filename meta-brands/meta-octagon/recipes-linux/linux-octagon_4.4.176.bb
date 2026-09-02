@@ -7,11 +7,11 @@ KERNEL_RELEASE = "4.4.176"
 SRCDATE = "20220302"
 SRCDATE:sx88v2 = "20221203"
 
-COMPATIBLE_MACHINE = "^(sf8008opt|sfx6008|sx988|sx88v2)$"
+COMPATIBLE_MACHINE = "^(sfx6008|sx988|sx88v2)$"
 
 inherit kernel machine_kernel_pr kernel-fixups
 
-MACHINE_KERNEL_PR:append = "1"
+MACHINE_KERNEL_PR:append = "2"
 
 KVTYPE = "mv200"
 KVTYPE:sx88v2 = "mv300"
@@ -30,6 +30,7 @@ SRC_URI += "https://source.mynonpublic.com/octagon/octagon-linux-${PV}-${SRCDATE
     file://findkerneldevice.sh \
     ${KERNEL_PATCH_BINUTILS241_V7} \
     ${KERNEL_PATCH_WIFI_CFG80211} \
+    ${KERNEL_PATCH_WIFI_EXTAUTH_44} \
 "
 
 S = "${UNPACKDIR}/linux-${PV}"

@@ -20,6 +20,7 @@ SYSTEMD_SERVICE:${PN} = "wpa_supplicant.service"
 SYSTEMD_AUTO_ENABLE = "disable"
 
 PR = "r1"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 SRC_URI = "http://w1.fi/releases/wpa_supplicant-${PV}.tar.gz  \
            file://defconfig \
